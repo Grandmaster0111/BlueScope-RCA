@@ -1,0 +1,95 @@
+{
+  "layer": "L2CAP",
+  "source": "Bluetooth Core Specification, Vol 3, Part A (L2CAP Signaling)",
+  "connect_result_codes": {
+    "0x0000": {
+      "name": "Connection successful",
+      "description": "The L2CAP channel was established successfully.",
+      "common_causes": []
+    },
+    "0x0001": {
+      "name": "Connection pending",
+      "description": "The connection is still being set up; a further response will follow (often pending authorization or authentication).",
+      "common_causes": ["Channel creation waiting on user authorization or an ongoing pairing procedure"]
+    },
+    "0x0002": {
+      "name": "Connection refused - PSM not supported",
+      "description": "The remote device does not support/register the requested Protocol/Service Multiplexer (PSM), so it cannot route the channel to any service.",
+      "common_causes": ["Client tried to connect to a profile (e.g. A2DP/SDP/RFCOMM) the peer device doesn't implement or hasn't enabled", "Wrong PSM value used by the client stack"]
+    },
+    "0x0003": {
+      "name": "Connection refused - security block",
+      "description": "The remote device refused the channel because the link's current security level (authentication/encryption) doesn't meet the service's requirements.",
+      "common_causes": ["Profile requires an encrypted/authenticated link but pairing hasn't completed yet", "Bonding was lost or keys are stale on one side"]
+    },
+    "0x0004": {
+      "name": "Connection refused - no resources available",
+      "description": "The remote device lacks the resources (memory, channel table slots) to accept a new L2CAP channel.",
+      "common_causes": ["Peer already has many open channels/connections", "Peer is low on memory"]
+    },
+    "0x0005": {
+      "name": "Connection refused - Invalid Source CID",
+      "description": "The source channel identifier in the request was invalid or already in use.",
+      "common_causes": ["Stack bug reusing a CID that's still allocated", "Out-of-order signaling packets"]
+    },
+    "0x0006": {
+      "name": "Connection refused - Source CID already allocated",
+      "description": "The requested source CID is already allocated to another channel.",
+      "common_causes": ["CID allocation collision, often from rapid reconnect without full teardown"]
+    },
+    "0x0007": {
+      "name": "Connection refused - Unacceptable Parameters",
+      "description": "(LE Credit Based Flow Control) The proposed channel parameters (MTU, MPS, credits) were unacceptable.",
+      "common_causes": ["Requested LE L2CAP COC parameters exceed what the peer supports"]
+    }
+  },
+  "command_reject_reason_codes": {
+    "0x0000": {
+      "name": "Command not understood",
+      "description": "The peer's L2CAP layer didn't recognize the signaling command code.",
+      "common_causes": ["Sender used a signaling command the peer's L2CAP version doesn't implement"]
+    },
+    "0x0001": {
+      "name": "Signaling MTU exceeded",
+      "description": "The signaling packet exceeded the peer's signaling MTU.",
+      "common_causes": ["Oversized signaling PDU, often from a malformed or buggy stack"]
+    },
+    "0x0002": {
+      "name": "Invalid CID in request",
+      "description": "The request referenced a channel identifier that doesn't exist.",
+      "common_causes": ["Stale CID used after the channel was already disconnected"]
+    }
+  },
+  "configure_result_codes": {
+    "0x0000": {
+      "name": "Success",
+      "description": "Channel configuration completed successfully.",
+      "common_causes": []
+    },
+    "0x0001": {
+      "name": "Failure - unacceptable parameters",
+      "description": "The proposed configuration parameters (e.g. MTU, flush timeout) were not acceptable.",
+      "common_causes": ["Requested MTU/flow-control parameters outside what the peer supports"]
+    },
+    "0x0002": {
+      "name": "Failure - rejected (no reason)",
+      "description": "Configuration was rejected without a specific reason given.",
+      "common_causes": ["Generic peer-side rejection, often a vendor stack quirk"]
+    },
+    "0x0003": {
+      "name": "Failure - unknown options",
+      "description": "The configuration request contained option types the peer doesn't recognize.",
+      "common_causes": ["Sender used an L2CAP configuration option newer than the peer's spec version"]
+    },
+    "0x0004": {
+      "name": "Pending",
+      "description": "Configuration negotiation is still in progress.",
+      "common_causes": ["Multi-round configuration negotiation in progress"]
+    },
+    "0x0005": {
+      "name": "Failure - flow spec rejected",
+      "description": "The proposed flow-control specification was rejected.",
+      "common_causes": ["Requested QoS/flow parameters the peer cannot guarantee"]
+    }
+  }
+}

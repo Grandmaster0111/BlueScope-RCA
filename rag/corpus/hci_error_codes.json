@@ -1,0 +1,336 @@
+{
+  "layer": "HCI",
+  "source": "Bluetooth Core Specification, Vol 1, Part F (Controller Error Codes)",
+  "codes": {
+    "0x00": {
+      "name": "Success",
+      "description": "The command or procedure completed without error.",
+      "common_causes": []
+    },
+    "0x01": {
+      "name": "Unknown HCI Command",
+      "description": "The controller does not recognize the HCI command opcode that was sent.",
+      "common_causes": ["Host sent an opcode the controller firmware does not implement", "Version mismatch between host stack and controller firmware"]
+    },
+    "0x02": {
+      "name": "Unknown Connection Identifier",
+      "description": "A command was sent referencing a connection handle that the controller has no record of.",
+      "common_causes": ["Stale connection handle used after disconnect", "Race between disconnect and a command targeting the old handle"]
+    },
+    "0x03": {
+      "name": "Hardware Failure",
+      "description": "The controller has detected a hardware failure that prevents it from completing the requested action.",
+      "common_causes": ["Faulty radio/controller chip", "Firmware crash"]
+    },
+    "0x04": {
+      "name": "Page Timeout",
+      "description": "BR/EDR page procedure timed out -- the remote device did not respond to paging within the page timeout window.",
+      "common_causes": ["Remote device out of range or powered off", "Remote device not in page scan mode", "Wrong BD_ADDR", "RF interference"]
+    },
+    "0x05": {
+      "name": "Authentication Failure",
+      "description": "Pairing or authentication failed, typically due to an incorrect PIN, link key, or passkey.",
+      "common_causes": ["Incorrect PIN/passkey entered", "Mismatched or stale link keys on one side", "User cancelled pairing"]
+    },
+    "0x06": {
+      "name": "PIN or Key Missing",
+      "description": "The remote device indicated it has no stored link key or PIN for this peer, so a previously-encrypted link cannot be re-established.",
+      "common_causes": ["Remote device's bonded keys were cleared/factory reset", "Local host attempted to reconnect with a stale link key"]
+    },
+    "0x07": {
+      "name": "Memory Capacity Exceeded",
+      "description": "The controller has run out of internal memory to track the operation (e.g. too many simultaneous connections or stored keys).",
+      "common_causes": ["Too many simultaneous connections for controller's resources", "Bonded-device key storage full"]
+    },
+    "0x08": {
+      "name": "Connection Timeout",
+      "description": "An established connection was lost because no valid packets were received within the supervision timeout window.",
+      "common_causes": ["Devices moved out of RF range", "Severe interference dropping packets", "Peer device crashed or lost power without sending a disconnect", "Supervision timeout set too aggressively for the link's connection interval"]
+    },
+    "0x09": {
+      "name": "Connection Limit Exceeded",
+      "description": "The controller already has the maximum number of connections it supports and rejected a new one.",
+      "common_causes": ["Application opened more simultaneous BT connections than the controller supports"]
+    },
+    "0x0A": {
+      "name": "Synchronous Connection Limit To A Device Exceeded",
+      "description": "Too many synchronous (SCO/eSCO) connections were requested to the same device.",
+      "common_causes": ["Multiple audio links opened to one peer simultaneously"]
+    },
+    "0x0B": {
+      "name": "Connection Already Exists",
+      "description": "A connection request was made to a device that already has an active connection.",
+      "common_causes": ["Duplicate connect request race from upper layer"]
+    },
+    "0x0C": {
+      "name": "Command Disallowed",
+      "description": "The command cannot be executed because the controller is in a state where it isn't allowed (e.g. wrong mode, already in progress).",
+      "common_causes": ["Command issued out of sequence relative to controller state machine", "Overlapping commands of the same type issued back-to-back"]
+    },
+    "0x0D": {
+      "name": "Connection Rejected due to Limited Resources",
+      "description": "The remote device rejected the incoming connection because it lacks resources to accept it.",
+      "common_causes": ["Remote device's connection table is full", "Remote device is low on memory/power"]
+    },
+    "0x0E": {
+      "name": "Connection Rejected Due To Security Reasons",
+      "description": "The remote device rejected the connection on security grounds (e.g. it requires authentication/encryption the initiator didn't provide).",
+      "common_causes": ["Peer requires bonding/encryption before allowing the connection", "Local device's security mode/IO capability is insufficient for peer's requirements"]
+    },
+    "0x0F": {
+      "name": "Connection Rejected due to Unacceptable BD_ADDR",
+      "description": "The remote device rejected the connection because of the initiator's Bluetooth address (e.g. it isn't on an allow list).",
+      "common_causes": ["Peer is using an accept/allow list that excludes this device's address", "Address type mismatch (public vs random) confusing peer's filter"]
+    },
+    "0x10": {
+      "name": "Connection Accept Timeout Exceeded",
+      "description": "The local controller's connection accept timeout expired before the connection could complete.",
+      "common_causes": ["Remote stopped responding mid-handshake", "Connection accept timeout configured too short for the RF environment"]
+    },
+    "0x11": {
+      "name": "Unsupported Feature or Parameter Value",
+      "description": "A requested feature or parameter value is not supported by the controller or remote device.",
+      "common_causes": ["Host requested a feature (e.g. a specific PHY, data length) the controller/peer doesn't implement", "Version/capability mismatch between host stack and controller firmware"]
+    },
+    "0x12": {
+      "name": "Invalid HCI Command Parameters",
+      "description": "One or more parameters in the HCI command were outside the valid range or otherwise malformed.",
+      "common_causes": ["Host stack bug constructing the command", "Parameter values outside spec-defined range (e.g. invalid connection interval)"]
+    },
+    "0x13": {
+      "name": "Remote User Terminated Connection",
+      "description": "The remote side's user/application explicitly closed the connection (a normal, intentional disconnect).",
+      "common_causes": ["User closed the app or turned off Bluetooth on the peer device", "Peer application logic decided to disconnect"]
+    },
+    "0x14": {
+      "name": "Remote Device Terminated Connection due to Low Resources",
+      "description": "The remote device disconnected because it ran low on resources (memory, connection slots, battery management, etc.).",
+      "common_causes": ["Peer's connection/memory limits reached", "Peer entering a low-power state and shedding connections"]
+    },
+    "0x15": {
+      "name": "Remote Device Terminated Connection due to Power Off",
+      "description": "The remote device disconnected because it is powering off.",
+      "common_causes": ["Peer device shutting down or its battery died", "User powered off the peer device"]
+    },
+    "0x16": {
+      "name": "Connection Terminated By Local Host",
+      "description": "The local host explicitly requested the disconnect (normal, intentional local disconnect).",
+      "common_causes": ["Application explicitly called disconnect", "Local stack tore down the link after an error elsewhere"]
+    },
+    "0x17": {
+      "name": "Repeated Attempts",
+      "description": "The controller rejected the request because of repeated unsuccessful attempts in a short window (anti-flood / anti-bruteforce protection).",
+      "common_causes": ["Pairing retried too many times too quickly", "Connection retried in a tight loop after failures"]
+    },
+    "0x18": {
+      "name": "Pairing Not Allowed",
+      "description": "Pairing was attempted but is not currently allowed by the remote device.",
+      "common_causes": ["Peer not in pairing/discoverable mode", "Peer's pairing window already closed"]
+    },
+    "0x19": {
+      "name": "Unknown LMP PDU",
+      "description": "The controller received an LMP PDU it does not understand.",
+      "common_causes": ["Firmware/baseband incompatibility between peers"]
+    },
+    "0x1A": {
+      "name": "Unsupported Remote Feature",
+      "description": "The remote device does not support a feature that was requested or required for the procedure.",
+      "common_causes": ["Local stack assumed a feature (e.g. Secure Connections, LE Data Length Extension) the peer doesn't implement"]
+    },
+    "0x1B": {
+      "name": "SCO Offset Rejected",
+      "description": "Remote rejected the requested SCO timing offset.",
+      "common_causes": ["Peer's scheduler cannot accommodate the requested SCO offset"]
+    },
+    "0x1C": {
+      "name": "SCO Interval Rejected",
+      "description": "Remote rejected the requested SCO interval.",
+      "common_causes": ["Peer cannot support the requested audio link interval"]
+    },
+    "0x1D": {
+      "name": "SCO Air Mode Rejected",
+      "description": "Remote rejected the requested SCO air mode (codec/coding format for the voice link).",
+      "common_causes": ["Peer doesn't support the requested audio codec/air mode (e.g. CVSD vs mSBC)"]
+    },
+    "0x1E": {
+      "name": "Invalid LMP Parameters / Invalid LL Parameters",
+      "description": "A parameter in an LMP (BR/EDR) or LL (LE) procedure was invalid or not acceptable.",
+      "common_causes": ["Out-of-range connection parameters requested (interval, latency, timeout)", "Stack bug generating malformed link-layer parameters"]
+    },
+    "0x1F": {
+      "name": "Unspecified Error",
+      "description": "An error occurred that doesn't have a more specific error code -- a catch-all failure.",
+      "common_causes": ["Controller-internal failure not otherwise classified", "Often paired with vendor-specific debug logs for the real cause"]
+    },
+    "0x20": {
+      "name": "Unsupported LMP Parameter Value / Unsupported LL Parameter Value",
+      "description": "A parameter value, while well-formed, isn't supported by this controller.",
+      "common_causes": ["Requested PHY, data length, or connection parameter exceeds controller's supported range"]
+    },
+    "0x21": {
+      "name": "Role Change Not Allowed",
+      "description": "A master/slave role switch request was rejected.",
+      "common_causes": ["Peer doesn't support role switching", "Role switch attempted at an invalid time (e.g. during an active SCO link)"]
+    },
+    "0x22": {
+      "name": "LMP Response Timeout / LL Response Timeout",
+      "description": "A procedure timed out waiting for a peer's link-layer response.",
+      "common_causes": ["RF link too poor for timely LL/LMP responses", "Peer firmware hung mid-procedure", "Peer disconnected/powered off mid-negotiation"]
+    },
+    "0x23": {
+      "name": "LMP Error Transaction Collision / LL Procedure Collision",
+      "description": "Two link-layer procedures collided (both sides initiated conflicting procedures at the same time).",
+      "common_causes": ["Both peers simultaneously initiated a connection-parameter or PHY update procedure"]
+    },
+    "0x24": {
+      "name": "LMP PDU Not Allowed",
+      "description": "The LMP PDU received isn't allowed in the controller's current state.",
+      "common_causes": ["Out-of-sequence baseband procedure"]
+    },
+    "0x25": {
+      "name": "Encryption Mode Not Acceptable",
+      "description": "The proposed encryption mode/strength is not acceptable to one side.",
+      "common_causes": ["Security policy requires stronger encryption than peer offered", "Legacy peer only supports weaker encryption than local policy allows"]
+    },
+    "0x26": {
+      "name": "Link Key cannot be Changed",
+      "description": "A request to change the link key was rejected.",
+      "common_causes": ["Unit key in use where a combination key is required"]
+    },
+    "0x27": {
+      "name": "Requested QoS Not Supported",
+      "description": "The requested quality-of-service parameters are not supported.",
+      "common_causes": ["Application requested bandwidth/latency the link cannot guarantee"]
+    },
+    "0x28": {
+      "name": "Instant Passed",
+      "description": "A link-layer procedure referencing a future connection event ('instant') arrived after that instant had already passed.",
+      "common_causes": ["Connection parameter/PHY/channel-map update applied too late, often due to a slow or congested link", "Clock drift between peers"]
+    },
+    "0x29": {
+      "name": "Pairing With Unit Key Not Supported",
+      "description": "Pairing using a (deprecated) unit key was attempted but isn't supported.",
+      "common_causes": ["Legacy peer trying to use unit-key pairing against a stack that requires combination keys"]
+    },
+    "0x2A": {
+      "name": "Different Transaction Collision",
+      "description": "Two different LMP/LL transactions collided.",
+      "common_causes": ["Overlapping unrelated procedures initiated by both sides at once"]
+    },
+    "0x2C": {
+      "name": "QoS Unacceptable Parameter",
+      "description": "QoS parameters proposed were not acceptable.",
+      "common_causes": ["Requested bandwidth/latency outside what the link supports"]
+    },
+    "0x2D": {
+      "name": "QoS Rejected",
+      "description": "The QoS request was rejected outright.",
+      "common_causes": ["Peer cannot support any QoS guarantee for the requested traffic"]
+    },
+    "0x2E": {
+      "name": "Channel Classification Not Supported",
+      "description": "AFH channel classification was requested but isn't supported.",
+      "common_causes": ["Peer controller doesn't implement adaptive frequency hopping channel classification"]
+    },
+    "0x2F": {
+      "name": "Insufficient Security",
+      "description": "The current security level on the link is insufficient for the requested operation.",
+      "common_causes": ["GATT/profile operation requires encryption or authentication that hasn't been established yet", "Application accessed a protected attribute before pairing completed"]
+    },
+    "0x30": {
+      "name": "Parameter Out of Mandatory Range",
+      "description": "A parameter value is outside the range mandated by the specification.",
+      "common_causes": ["Host requested connection interval/latency/timeout combination outside spec-mandated bounds"]
+    },
+    "0x32": {
+      "name": "Role Switch Pending",
+      "description": "A role switch is already pending and a new request collided with it.",
+      "common_causes": ["Role switch requested twice in quick succession"]
+    },
+    "0x34": {
+      "name": "Reserved Slot Violation",
+      "description": "The reserved slot for a synchronous connection was violated.",
+      "common_causes": ["Scheduling conflict among multiple synchronous (SCO/eSCO) links"]
+    },
+    "0x35": {
+      "name": "Role Switch Failed",
+      "description": "An attempted role switch did not complete successfully.",
+      "common_causes": ["Peer rejected or could not complete the switch mid-procedure"]
+    },
+    "0x36": {
+      "name": "Extended Inquiry Response Too Large",
+      "description": "The Extended Inquiry Response data exceeds the supported size.",
+      "common_causes": ["Application wrote EIR data larger than 240 bytes"]
+    },
+    "0x37": {
+      "name": "Secure Simple Pairing Not Supported By Host",
+      "description": "The host does not support Secure Simple Pairing, blocking a procedure that requires it.",
+      "common_causes": ["Legacy host stack paired against a peer that mandates SSP"]
+    },
+    "0x38": {
+      "name": "Host Busy - Pairing",
+      "description": "The host is already busy with a pairing procedure and cannot start another.",
+      "common_causes": ["Second pairing attempt initiated while the first is still in progress"]
+    },
+    "0x39": {
+      "name": "Connection Rejected due to No Suitable Channel Found",
+      "description": "No suitable channel could be found for the connection (AFH-related).",
+      "common_causes": ["Severe RF interference removing too many usable channels"]
+    },
+    "0x3A": {
+      "name": "Controller Busy",
+      "description": "The controller is too busy to process the request right now.",
+      "common_causes": ["Controller resource exhaustion from too many concurrent operations"]
+    },
+    "0x3B": {
+      "name": "Unacceptable Connection Parameters",
+      "description": "The proposed connection parameters (interval, latency, timeout) were rejected as unacceptable.",
+      "common_causes": ["App requested connection interval/latency combination the peer rejects", "Connection parameter update collided with peer's own constraints"]
+    },
+    "0x3C": {
+      "name": "Advertising Timeout",
+      "description": "Advertising stopped because its configured timeout/duration expired without a connection.",
+      "common_causes": ["No scanner/central connected within the advertising window", "Advertising duration configured too short"]
+    },
+    "0x3D": {
+      "name": "Connection Terminated due to MIC Failure",
+      "description": "The link was torn down because a Message Integrity Check failed on an encrypted packet, indicating the encrypted session is corrupted or compromised.",
+      "common_causes": ["Encryption key mismatch between peers after a reconnect with stale keys", "RF corruption flipping bits in an encrypted PDU", "Potential man-in-the-middle/replay tampering"]
+    },
+    "0x3E": {
+      "name": "Connection Failed to be Established / Synchronization Timeout",
+      "description": "The connection procedure started but never completed -- the link-layer connection could not be established or synchronization was lost before it finished.",
+      "common_causes": ["Peer moved out of range during the connection setup window", "Severe interference during the connection-establishment phase", "Peer firmware aborted mid-handshake"]
+    },
+    "0x40": {
+      "name": "Coarse Clock Adjustment Rejected",
+      "description": "A coarse clock adjustment was requested but rejected.",
+      "common_causes": ["Peer controller doesn't support coarse clock adjustment"]
+    },
+    "0x41": {
+      "name": "Type0 Submap Not Defined",
+      "description": "A Type0 channel submap was referenced but not defined.",
+      "common_causes": ["LE channel selection algorithm configuration error"]
+    },
+    "0x42": {
+      "name": "Unknown Advertising Identifier",
+      "description": "A command referenced an advertising set identifier the controller doesn't recognize.",
+      "common_causes": ["Host referenced an advertising handle that was already removed or never created"]
+    },
+    "0x43": {
+      "name": "Limit Reached",
+      "description": "An internal limit (e.g. number of advertising sets, periodic sync, or filter list entries) was reached.",
+      "common_causes": ["Application created more LE resources (adv sets, sync handles) than the controller supports"]
+    },
+    "0x44": {
+      "name": "Operation Cancelled by Host",
+      "description": "The host explicitly cancelled the in-progress operation.",
+      "common_causes": ["Application called a cancel command (e.g. Create Connection Cancel) before completion"]
+    },
+    "0x45": {
+      "name": "Packet Too Long",
+      "description": "A packet exceeded the maximum length supported for this PHY/connection.",
+      "common_causes": ["Data length exceeds what was negotiated or what the PHY supports"]
+    }
+  }
+}

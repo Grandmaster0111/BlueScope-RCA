@@ -1,0 +1,81 @@
+{
+  "layer": "SMP",
+  "source": "Bluetooth Core Specification, Vol 3, Part H (Security Manager Protocol)",
+  "pairing_failed_reason_codes": {
+    "0x01": {
+      "name": "Passkey Entry Failed",
+      "description": "The user did not correctly enter the requested passkey during pairing.",
+      "common_causes": ["User mistyped the passkey", "User cancelled the passkey entry dialog"]
+    },
+    "0x02": {
+      "name": "OOB Not Available",
+      "description": "Out-of-band pairing data was required but not available.",
+      "common_causes": ["Pairing method negotiated to OOB but one side has no OOB data (e.g. NFC tag not read)"]
+    },
+    "0x03": {
+      "name": "Authentication Requirements",
+      "description": "The pairing method couldn't satisfy the authentication requirements (e.g. MITM protection) requested by one of the devices.",
+      "common_causes": ["One device requires MITM protection (authenticated pairing) but the IO capabilities of the pair only support Just Works", "Bonding flags mismatch between initiator and responder"]
+    },
+    "0x04": {
+      "name": "Confirm Value Failed",
+      "description": "The confirm value computed during pairing did not match, indicating tampering or a protocol error.",
+      "common_causes": ["Data corruption on the link during pairing", "Potential MITM interference", "Stack bug in confirm/random value generation"]
+    },
+    "0x05": {
+      "name": "Pairing Not Supported",
+      "description": "The device does not support pairing at all.",
+      "common_causes": ["Peer device has security disabled or doesn't implement SMP"]
+    },
+    "0x06": {
+      "name": "Encryption Key Size",
+      "description": "The negotiated encryption key size was below the minimum required by one of the devices.",
+      "common_causes": ["Peer requested a short key size below the local minimum security policy (commonly an attack-downgrade attempt, or just a legacy/low-power peer)"]
+    },
+    "0x07": {
+      "name": "Command Not Supported",
+      "description": "The SMP command received is not supported by this device.",
+      "common_causes": ["SMP version mismatch between stacks"]
+    },
+    "0x08": {
+      "name": "Unspecified Reason",
+      "description": "Pairing failed for a reason that doesn't have a more specific code -- a catch-all failure.",
+      "common_causes": ["Internal stack error during pairing not otherwise classified"]
+    },
+    "0x09": {
+      "name": "Repeated Attempts",
+      "description": "Pairing was attempted too many times in a short window and was rejected as a precaution against brute-force attacks.",
+      "common_causes": ["Automatic retry loop hammering pairing after each failure", "Possible brute-force passkey guessing attempt"]
+    },
+    "0x0A": {
+      "name": "Invalid Parameters",
+      "description": "One of the pairing parameters was invalid or unacceptable.",
+      "common_causes": ["Malformed Pairing Request/Response PDU from a buggy stack"]
+    },
+    "0x0B": {
+      "name": "DHKey Check Failed",
+      "description": "The DHKey check value in LE Secure Connections pairing did not match.",
+      "common_causes": ["Public key exchange corrupted or tampered with", "Possible MITM attack during Secure Connections pairing"]
+    },
+    "0x0C": {
+      "name": "Numeric Comparison Failed",
+      "description": "The user rejected the numeric comparison (the displayed codes did not match, or the user pressed 'No').",
+      "common_causes": ["User intentionally rejected pairing", "Display showing different values on each side, indicating tampering or a UI bug"]
+    },
+    "0x0D": {
+      "name": "BR/EDR Pairing in Progress",
+      "description": "Pairing was rejected because a BR/EDR pairing procedure is already in progress on this link.",
+      "common_causes": ["Cross-transport pairing attempted while classic pairing hasn't finished"]
+    },
+    "0x0E": {
+      "name": "Cross-transport Key Derivation/Generation not allowed",
+      "description": "Cross-transport key derivation (deriving an LE key from a BR/EDR key or vice versa) was not permitted in this context.",
+      "common_causes": ["Security policy disallows cross-transport key derivation for this pairing"]
+    },
+    "0x0F": {
+      "name": "Key Rejected",
+      "description": "The distributed key was rejected by the receiving device.",
+      "common_causes": ["Key didn't meet local security policy (e.g. too weak) and was refused"]
+    }
+  }
+}
