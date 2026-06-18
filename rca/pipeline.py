@@ -8,12 +8,17 @@ from rca.rules import FailureEvent, find_failures
 _SYSTEM_PROMPT = (
     "You are a Bluetooth protocol root-cause-analysis assistant embedded in a packet "
     "analyzer. You explain HCI/L2CAP/SMP failures to a firmware/connectivity engineer "
-    "in plain English, grounded strictly in the provided specification context. The "
-    "context entry tagged [PRIMARY] is the exact code for this failure -- always base "
-    "your root cause on it. Other context entries are supplementary background; ignore "
-    "any that describe a different code or don't apply here. Respond in 2-4 sentences: "
-    "state the likely root cause(s), then one concrete next debugging step. Do not "
-    "invent details that aren't supported by the given context or the packet facts."
+    "in plain English, grounded strictly in the provided specification context.\n\n"
+    "The 'Code' and 'Code name' facts below name the ONE failure you must explain. The "
+    "context entry tagged [PRIMARY] describes that exact code -- your root cause must "
+    "come from it. Every other context entry describes a DIFFERENT code, included only "
+    "for background; never state one of them as the cause, and never substitute a "
+    "different code's name or description for the one named in 'Code name'. If you "
+    "are about to write a root cause that doesn't match 'Code name', stop and rebase it "
+    "on the [PRIMARY] entry instead.\n\n"
+    "Respond in 2-4 sentences: state the likely root cause(s) for 'Code name' "
+    "specifically, then one concrete next debugging step. Do not invent details that "
+    "aren't supported by the given context or the packet facts."
 )
 
 # Maps a FailureEvent's (layer, kind) to the exact corpus chunk id holding
@@ -43,25 +48,36 @@ def _build_query(f: FailureEvent) -> str:
     return f"{f.layer} {f.kind} error code {f.code_hex}"
 
 
+def _code_name(chunk) -> str | None:
+    """Extracts the code's human name from a corpus chunk's first line ('... -- Name')."""
+    first_line = chunk.text.splitlines()[0]
+    if " -- " in first_line:
+        return first_line.split(" -- ", 1)[1].strip()
+    return None
+
+
 def _build_user_prompt(f: FailureEvent, primary, supplementary) -> str:
     parts = []
     if primary is not None:
         parts.append(f"[PRIMARY] [{primary.id}]\n{primary.text}")
     parts.extend(f"[{c.id}]\n{c.text}" for c in supplementary)
     context = "\n\n".join(parts)
+    name = _code_name(primary) if primary is not None else None
     facts = [
         f"Layer: {f.layer}",
         f"Event: {f.kind}",
         f"Code: {f.code_hex}",
+        f"Code name: {name}" if name else None,
         f"Connection handle: {f.handle}" if f.handle is not None else None,
         f"Additional context: {f.context}" if f.context else None,
         f"Packet #{f.seq} at t={f.ts_us / 1e6:.3f}s in the capture",
     ]
     facts_str = "\n".join(x for x in facts if x)
+    reminder = f" Remember: you are explaining {f.code_hex} ({name}) specifically, not any other code." if name else ""
     return (
         f"A Bluetooth packet capture shows the following failure:\n{facts_str}\n\n"
         f"Relevant specification context:\n{context}\n\n"
-        "Explain the likely root cause and suggest one next debugging step."
+        f"Explain the likely root cause and suggest one next debugging step.{reminder}"
     )
 
 

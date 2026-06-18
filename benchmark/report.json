@@ -1,0 +1,708 @@
+{
+  "timestamp": "2026-06-18T15:03:33.919432+00:00",
+  "llm_model": "llama3.2:latest",
+  "embed_model": "nomic-embed-text",
+  "total_cases": 28,
+  "total_failures_detected": 28,
+  "detection_accuracy": 1.0,
+  "explanation_accuracy": 1.0,
+  "elapsed_seconds": 105.6,
+  "cases": [
+    {
+      "name": "hci_conn_page_timeout",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Connection Complete Failed",
+        "code": "0x04"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x04 (Page Timeout) is that the remote device is out of range or powered off, preventing it from responding to paging within the specified timeout window.\n\nNext debugging step: Verify the remote device's power state and RF signal strength by checking the device's proximity to the Bluetooth module and ensuring it is turned on. Use a multimeter to measure the received signal strength indicator (RSSI) values for the remote device, which can help determine if the device is within range and transmitting correctly.",
+      "citations": [
+        "hci_error_codes:codes:0x04",
+        "hci_error_codes:codes:0x0D",
+        "hci_error_codes:codes:0x00",
+        "hci_error_codes:codes:0x03",
+        "hci_error_codes:codes:0x3E"
+      ],
+      "expected_keywords": [
+        "out of range",
+        "page",
+        "not respond",
+        "powered off"
+      ],
+      "matched_keyword": "out of range",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_conn_limited_resources",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Connection Complete Failed",
+        "code": "0x0D"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code name 'Connection Rejected due to Limited Resources' is that the remote device's connection table is full or it is low on memory/power.\n\nNext debugging step: Inspect the packet capture to verify if there are multiple connections established simultaneously with the same device, which could indicate a full connection table.",
+      "citations": [
+        "hci_error_codes:codes:0x0D",
+        "hci_error_codes:codes:0x00",
+        "hci_error_codes:codes:0x03",
+        "hci_error_codes:codes:0x05",
+        "hci_error_codes:codes:0x13"
+      ],
+      "expected_keywords": [
+        "resource",
+        "memory",
+        "full"
+      ],
+      "matched_keyword": "resource",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_conn_security_block",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Connection Complete Failed",
+        "code": "0x0E"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code name 'Connection Rejected Due To Security Reasons' is that the remote device requires bonding/encryption before allowing the connection, but the local device's security mode/IO capability is insufficient to meet the peer's requirements.\n\nNext debugging step: Inspect the HCI packet #3 at t=0.004s in the capture to verify if the 'Security Requested' bit (bit 5 of the LMP command) was set in the LMP Command Channel message, which would indicate that the remote device is requesting security features such as encryption or authentication.",
+      "citations": [
+        "hci_error_codes:codes:0x0E",
+        "hci_error_codes:codes:0x3E",
+        "hci_error_codes:codes:0x00",
+        "hci_error_codes:codes:0x0D",
+        "hci_error_codes:codes:0x05"
+      ],
+      "expected_keywords": [
+        "security",
+        "encrypt",
+        "authent",
+        "bond"
+      ],
+      "matched_keyword": "security",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_conn_unacceptable_bdaddr",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Connection Complete Failed",
+        "code": "0x0F"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause of this failure is that the remote device's accept/allow list excludes the initiator's Bluetooth address, or there is an address type mismatch between public and random addresses.\n\nNext debugging step: Verify that the initiator's Bluetooth address (BD_ADDR) matches the expected format and is correctly configured in the allow list of the remote device.",
+      "citations": [
+        "hci_error_codes:codes:0x0F",
+        "hci_error_codes:codes:0x0D",
+        "hci_error_codes:codes:0x00",
+        "hci_error_codes:codes:0x05",
+        "hci_error_codes:codes:0x1F"
+      ],
+      "expected_keywords": [
+        "address",
+        "allow list",
+        "filter",
+        "bd_addr"
+      ],
+      "matched_keyword": "address",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_conn_accept_timeout",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Connection Complete Failed",
+        "code": "0x10"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x10 (Connection Accept Timeout Exceeded) is that the remote device stopped responding mid-handshake, causing the local controller's connection accept timeout to expire before a successful handshake could complete.\n\nNext debugging step: Inspect the packet capture for any indication of a remote device disconnecting or stopping its response during the handshake process. Specifically, look for packets with the L2CAP Connection Handle (CH) set to 20 and check if there are any subsequent packets from the remote device that indicate it has stopped responding or disconnected.",
+      "citations": [
+        "hci_error_codes:codes:0x10",
+        "hci_error_codes:codes:0x03",
+        "hci_error_codes:codes:0x13",
+        "hci_error_codes:codes:0x05",
+        "hci_error_codes:codes:0x0D"
+      ],
+      "expected_keywords": [
+        "timeout",
+        "accept",
+        "stopped responding"
+      ],
+      "matched_keyword": "timeout",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_disc_connection_timeout",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Disconnection",
+        "code": "0x08"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code name 'Connection Timeout' (0x08) is that the peer device's supervision timeout window was set too aggressively for the link's connection interval, causing the local host to disconnect the connection prematurely.\n\nNext debugging step: Verify the connection interval and supervision timeout values used by both devices in the pair. Check if these values are within the recommended ranges specified in the Bluetooth specification (e.g., 1-10 ms for connection intervals and 2-5 seconds for supervision timeouts).",
+      "citations": [
+        "hci_error_codes:codes:0x08",
+        "hci_error_codes:codes:0x13",
+        "hci_error_codes:codes:0x16",
+        "hci_error_codes:codes:0x15",
+        "hci_error_codes:codes:0x03"
+      ],
+      "expected_keywords": [
+        "range",
+        "interference",
+        "crash",
+        "supervision",
+        "lost power"
+      ],
+      "matched_keyword": "range",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_disc_low_resources",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Disconnection",
+        "code": "0x14"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code name 'Remote Device Terminated Connection due to Low Resources' is that the remote device's connection or memory limits reached a critical threshold, causing it to shed connections.\n\nNext debugging step: Inspect the packet capture for any indication of the peer device entering a low-power state or shedding connections. Specifically, look for packets with L2CAP or SMP commands related to power management or connection limit changes (e.g., L2CAP Set Connection Limit).",
+      "citations": [
+        "hci_error_codes:codes:0x14",
+        "hci_error_codes:codes:0x13",
+        "hci_error_codes:codes:0x15",
+        "hci_error_codes:codes:0x16",
+        "hci_error_codes:codes:0x44"
+      ],
+      "expected_keywords": [
+        "resource",
+        "memory",
+        "low"
+      ],
+      "matched_keyword": "resource",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_disc_unspecified",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Disconnection",
+        "code": "0x1F"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for HCI error code 0x1F (Unspecified Error) is a controller-internal failure that doesn't have a more specific error code. This could be due to an unexpected condition or an internal system failure.\n\nNext debugging step: Inspect the vendor-specific debug logs for the real cause of the failure, as this code often indicates a non-classified issue within the controller. Reviewing these logs may provide additional information about what led up to the unspecified error and help identify potential root causes.",
+      "citations": [
+        "hci_error_codes:codes:0x1F",
+        "hci_error_codes:codes:0x13",
+        "hci_error_codes:codes:0x16",
+        "hci_error_codes:codes:0x15",
+        "hci_error_codes:codes:0x02"
+      ],
+      "expected_keywords": [
+        "unspecified",
+        "internal",
+        "not otherwise classified",
+        "catch-all"
+      ],
+      "matched_keyword": "unspecified",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_disc_mic_failure",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Disconnection",
+        "code": "0x3D"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x3D (Connection Terminated due to MIC Failure) is RF corruption flipping bits in an encrypted PDU. This could be caused by a weak or poor-quality radio link, which may introduce errors during transmission.\n\nNext debugging step: Analyze the packet capture to identify any packets that were transmitted with encryption and verify their integrity using the received MIC (Message Integrity Check). Specifically, examine Packet #9 at t=0.016s in the capture to check if it contains an encrypted PDU and if its MIC is valid or corrupted.",
+      "citations": [
+        "hci_error_codes:codes:0x3D",
+        "hci_error_codes:codes:0x03",
+        "hci_error_codes:codes:0x13",
+        "hci_error_codes:codes:0x16",
+        "hci_error_codes:codes:0x15"
+      ],
+      "expected_keywords": [
+        "mic",
+        "integrity",
+        "tamper",
+        "corrupt"
+      ],
+      "matched_keyword": "mic",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_disc_lmp_response_timeout",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Disconnection",
+        "code": "0x22"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x22 (LMP Response Timeout / LL Response Timeout) is that the peer device's firmware is hung mid-procedure or has a poor RF link that prevents timely LL/LMP responses.\n\nNext debugging step: Inspect the packet capture to verify if there are any other packets with connection handles related to handle 25 before packet #10, and check for any indication of a pending LMP response or LL command in those packets.",
+      "citations": [
+        "hci_error_codes:codes:0x22",
+        "hci_error_codes:codes:0x13",
+        "hci_error_codes:codes:0x16",
+        "hci_error_codes:codes:0x15",
+        "hci_error_codes:codes:0x02"
+      ],
+      "expected_keywords": [
+        "response timeout",
+        "rf",
+        "hung",
+        "poor"
+      ],
+      "matched_keyword": "response timeout",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_cmdcomplete_disallowed",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Command Complete Failed [Disconnect]",
+        "code": "0x0C"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code name 'Command Disallowed' is that there was an attempt to execute a command out of sequence relative to the controller's state machine or overlapping commands of the same type were issued back-to-back.\n\nNext debugging step: Inspect the HCI packet sequence leading up to Packet #11 at t=0.020s to verify if any commands were issued in an incorrect order or if there are overlapping commands of the same type that could have triggered this error.",
+      "citations": [
+        "hci_error_codes:codes:0x0C",
+        "hci_error_codes:codes:0x00",
+        "hci_error_codes:codes:0x16",
+        "hci_error_codes:codes:0x13",
+        "hci_error_codes:codes:0x02"
+      ],
+      "expected_keywords": [
+        "disallow",
+        "state",
+        "sequence",
+        "out of sequence"
+      ],
+      "matched_keyword": "disallow",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_cmdstatus_unknown_conn_id",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Command Status Failed [Disconnect]",
+        "code": "0x02"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x02 (Unknown Connection Identifier) is that a stale connection handle was used after disconnecting. This could be due to a race between the disconnect operation and another command targeting the old handle.\n\nNext debugging step: Inspect the HCI packet sequence leading up to Packet #12 at t=0.022s to verify if there were any commands sent with the same connection handle before or after the disconnect event, which would indicate that the handle was not properly cleared.",
+      "citations": [
+        "hci_error_codes:codes:0x02",
+        "hci_error_codes:codes:0x13",
+        "hci_error_codes:codes:0x16",
+        "hci_error_codes:codes:0x15",
+        "hci_error_codes:codes:0x12"
+      ],
+      "expected_keywords": [
+        "stale",
+        "handle",
+        "unknown connection",
+        "no record"
+      ],
+      "matched_keyword": "stale",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_enc_key_missing",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Encryption Change Failed",
+        "code": "0x06"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x06 (PIN or Key Missing) is that the remote device's bonded keys were cleared/factory reset, causing it to no longer have a stored link key or PIN for this peer.\n\nNext debugging step: Verify that the remote device was not factory reset recently by checking its stored link keys and/or verifying that the device's pairing settings are correct. This can be done by examining the HCI packet capture for any other error codes related to authentication or pairing, which may indicate a recent pairing attempt with an incorrect PIN/passkey.",
+      "citations": [
+        "hci_error_codes:codes:0x06",
+        "hci_error_codes:codes:0x05",
+        "hci_error_codes:codes:0x26",
+        "hci_error_codes:codes:0x25",
+        "hci_error_codes:codes:0x03"
+      ],
+      "expected_keywords": [
+        "key",
+        "pin",
+        "missing",
+        "stale",
+        "cleared"
+      ],
+      "matched_keyword": "key",
+      "explanation_ok": true
+    },
+    {
+      "name": "hci_enc_mode_not_acceptable",
+      "expected": {
+        "layer": "HCI",
+        "kind": "Encryption Change Failed",
+        "code": "0x25"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for 'Code name: Encryption Mode Not Acceptable' is that the proposed encryption mode/strength offered by one side of the connection is not acceptable to the other side due to security policy requirements or compatibility issues.\n\nNext debugging step: Inspect the packet capture to verify if there are any mismatched or stale link keys on either side, as this could be a contributing factor to the Encryption Mode Not Acceptable error.",
+      "citations": [
+        "hci_error_codes:codes:0x25",
+        "hci_error_codes:codes:0x05",
+        "hci_error_codes:codes:0x26",
+        "hci_error_codes:codes:0x29",
+        "hci_error_codes:codes:0x3D"
+      ],
+      "expected_keywords": [
+        "encryption mode",
+        "policy",
+        "weak",
+        "strength"
+      ],
+      "matched_keyword": "encryption mode",
+      "explanation_ok": true
+    },
+    {
+      "name": "le_conn_failed_to_establish",
+      "expected": {
+        "layer": "HCI",
+        "kind": "LE Connection Complete Failed",
+        "code": "0x3E"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause of this failure is that the peer device moved out of range during the connection setup window or lost power in that brief window, causing a synchronization timeout.\n\nNext debugging step: Inspect the packet capture for the `CONNECT_IND` packet sent by the controller to initiate the connection procedure. Verify that the packet was received successfully and that it was not corrupted or truncated.",
+      "citations": [
+        "hci_error_codes:codes:0x3E",
+        "hci_error_codes:codes:0x03",
+        "failure_patterns:6:LE connection establishment failures",
+        "hci_error_codes:codes:0x3B",
+        "hci_error_codes:codes:0x13"
+      ],
+      "expected_keywords": [
+        "establish",
+        "handshake",
+        "range",
+        "interference"
+      ],
+      "matched_keyword": "range",
+      "explanation_ok": true
+    },
+    {
+      "name": "le_conn_unacceptable_params",
+      "expected": {
+        "layer": "HCI",
+        "kind": "LE Connection Complete Failed",
+        "code": "0x3B"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x3B (Unacceptable Connection Parameters) is that the proposed connection parameters (interval, latency, timeout) requested by the application were rejected as unacceptable by the peer device.\n\nNext debugging step: Inspect the packet capture to verify if the application's requested connection parameters are indeed valid and reasonable. Check if the interval and latency values requested by the application fall within the typical range for Bluetooth connections (e.g., 1-10 ms for latency, 2-1000 ms for interval).",
+      "citations": [
+        "hci_error_codes:codes:0x3B",
+        "hci_error_codes:codes:0x3E",
+        "hci_error_codes:codes:0x03",
+        "hci_error_codes:codes:0x0D",
+        "hci_error_codes:codes:0x13"
+      ],
+      "expected_keywords": [
+        "parameter",
+        "interval",
+        "reject",
+        "latency"
+      ],
+      "matched_keyword": "parameter",
+      "explanation_ok": true
+    },
+    {
+      "name": "le_enhanced_conn_controller_busy",
+      "expected": {
+        "layer": "HCI",
+        "kind": "LE Enhanced Connection Complete Failed",
+        "code": "0x3A"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause of this failure is that the controller is too busy processing concurrent operations, leading to resource exhaustion.\n\nNext debugging step: Inspect the system's current task list or operation queue to determine if there are multiple connections or operations running concurrently, and verify if all necessary resources (e.g., radio bandwidth) are being allocated correctly.",
+      "citations": [
+        "hci_error_codes:codes:0x3A",
+        "hci_error_codes:codes:0x3E",
+        "hci_error_codes:codes:0x03",
+        "hci_error_codes:codes:0x3B",
+        "hci_error_codes:codes:0x3D"
+      ],
+      "expected_keywords": [
+        "busy",
+        "resource",
+        "too busy"
+      ],
+      "matched_keyword": "busy",
+      "explanation_ok": true
+    },
+    {
+      "name": "l2cap_psm_not_supported",
+      "expected": {
+        "layer": "L2CAP",
+        "kind": "Connect Rejected",
+        "code": "0x0002"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code name 'Connection refused - PSM not supported' is that the client stack used an invalid or unsupported Protocol/Service Multiplexer (PSM). This could be due to a wrong PSM value used by the client stack.\n\nNext debugging step: Verify the PSM values used in the L2CAP connection request and ensure they match the ones registered by the remote device. Check the 'psm' field in the packet capture for any inconsistencies or unexpected values, and review the Bluetooth protocol implementation to confirm that the correct PSM is being used.",
+      "citations": [
+        "l2cap_result_codes:connect_result_codes:0x0002",
+        "l2cap_result_codes:configure_result_codes:0x0002",
+        "l2cap_result_codes:connect_result_codes:0x0005",
+        "l2cap_result_codes:connect_result_codes:0x0004",
+        "l2cap_result_codes:command_reject_reason_codes:0x0000"
+      ],
+      "expected_keywords": [
+        "psm",
+        "not support",
+        "profile",
+        "doesn't implement"
+      ],
+      "matched_keyword": "psm",
+      "explanation_ok": true
+    },
+    {
+      "name": "l2cap_security_block",
+      "expected": {
+        "layer": "L2CAP",
+        "kind": "Connect Rejected",
+        "code": "0x0003"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for this failure is that the pairing process hasn't completed yet, or bonding was lost/stale on one side, which means the link's current security level doesn't meet the service's requirements.\n\nNext debugging step: Verify the pairing status and bonding state of both devices by checking the SDP (Service Discovery Protocol) data in the packet capture. Specifically, examine the 'psm' value (which is 'SDP' here) to ensure that it matches the expected pairing status and that bonding has not been lost or keys are stale on one side.",
+      "citations": [
+        "l2cap_result_codes:connect_result_codes:0x0003",
+        "l2cap_result_codes:configure_result_codes:0x0002",
+        "l2cap_result_codes:connect_result_codes:0x0007",
+        "l2cap_result_codes:connect_result_codes:0x0004",
+        "l2cap_result_codes:connect_result_codes:0x0005"
+      ],
+      "expected_keywords": [
+        "security",
+        "encrypt",
+        "authent",
+        "pairing"
+      ],
+      "matched_keyword": "security",
+      "explanation_ok": true
+    },
+    {
+      "name": "l2cap_no_resources",
+      "expected": {
+        "layer": "L2CAP",
+        "kind": "Connect Rejected",
+        "code": "0x0004"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x0004 (Connection refused - no resources available) is that the peer device lacks sufficient memory or channel table slots to accept a new L2CAP channel.\n\nNext debugging step: Inspect the peer's current open channels and connections to determine if it has exceeded its allowed limit, which could be causing the resource shortage.",
+      "citations": [
+        "l2cap_result_codes:connect_result_codes:0x0004",
+        "l2cap_result_codes:configure_result_codes:0x0002",
+        "l2cap_result_codes:connect_result_codes:0x0005",
+        "l2cap_result_codes:connect_result_codes:0x0007",
+        "l2cap_result_codes:connect_result_codes:0x0006"
+      ],
+      "expected_keywords": [
+        "resource",
+        "memory",
+        "channel table"
+      ],
+      "matched_keyword": "resource",
+      "explanation_ok": true
+    },
+    {
+      "name": "l2cap_configure_unacceptable_params",
+      "expected": {
+        "layer": "L2CAP",
+        "kind": "Configure Rejected",
+        "code": "0x0001"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for 'Code name' Failure - unacceptable parameters is that the requested MTU or flow-control parameters are outside what the peer supports.\n\nNext debugging step: Inspect the packet capture to verify the exact values of the proposed configuration parameters (e.g. MTU, flush timeout) and compare them with the peer's supported values as documented in the L2CAP specification or peer's documentation.",
+      "citations": [
+        "l2cap_result_codes:configure_result_codes:0x0001",
+        "l2cap_result_codes:configure_result_codes:0x0002",
+        "l2cap_result_codes:configure_result_codes:0x0005",
+        "l2cap_result_codes:command_reject_reason_codes:0x0000",
+        "l2cap_result_codes:configure_result_codes:0x0003"
+      ],
+      "expected_keywords": [
+        "parameter",
+        "mtu",
+        "unacceptable",
+        "flow"
+      ],
+      "matched_keyword": "parameter",
+      "explanation_ok": true
+    },
+    {
+      "name": "l2cap_connparam_update_rejected",
+      "expected": {
+        "layer": "L2CAP",
+        "kind": "Connection Parameter Update Rejected",
+        "code": "0x0001"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x0001 is that the proposed LE L2CAP COC (Connection-Oriented Control) parameters, specifically the Maximum Transmission Unit (MTU), are not acceptable to the peer device.\n\nNext debugging step: Inspect the packet capture for the exact values of MTU and other COC parameters being requested in the connection parameter update. Verify that these values match the supported range defined by the Bluetooth specification for the specific device and firmware version being used.",
+      "citations": [
+        "l2cap_result_codes:connect_result_codes:0x0007",
+        "l2cap_result_codes:connect_result_codes:0x0004",
+        "l2cap_result_codes:configure_result_codes:0x0002",
+        "l2cap_result_codes:configure_result_codes:0x0001"
+      ],
+      "expected_keywords": [
+        "parameter",
+        "interval",
+        "reject",
+        "latency"
+      ],
+      "matched_keyword": "parameter",
+      "explanation_ok": true
+    },
+    {
+      "name": "l2cap_invalid_cid",
+      "expected": {
+        "layer": "L2CAP",
+        "kind": "Command Reject",
+        "code": "0x0002"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for 'Code name: Invalid CID in request' is that a stale Channel Identifier (CID) was used after the channel was already disconnected. This could be due to incorrect handling of L2CAP connection state changes or failure to properly clean up resources when a connection is terminated.\n\nNext debugging step: Inspect the packet capture for any evidence of a previously established connection being reused without proper re-establishment, such as a stale CID being used in subsequent packets.",
+      "citations": [
+        "l2cap_result_codes:command_reject_reason_codes:0x0002",
+        "l2cap_result_codes:command_reject_reason_codes:0x0000",
+        "l2cap_result_codes:configure_result_codes:0x0002",
+        "l2cap_result_codes:command_reject_reason_codes:0x0001",
+        "l2cap_result_codes:configure_result_codes:0x0005"
+      ],
+      "expected_keywords": [
+        "cid",
+        "channel",
+        "stale",
+        "doesn't exist"
+      ],
+      "matched_keyword": "cid",
+      "explanation_ok": true
+    },
+    {
+      "name": "smp_passkey_entry_failed",
+      "expected": {
+        "layer": "SMP",
+        "kind": "Pairing Failed",
+        "code": "0x01"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for 'Code name: Passkey Entry Failed' is that the user either mistyped the requested passkey or cancelled the passkey entry dialog during pairing.\n\nNext debugging step: Inspect the passkey request and response packets to verify that they were transmitted correctly, including checking for any typos in the passkey values.",
+      "citations": [
+        "smp_reason_codes:pairing_failed_reason_codes:0x01",
+        "smp_reason_codes:pairing_failed_reason_codes:0x05",
+        "smp_reason_codes:pairing_failed_reason_codes:0x0A",
+        "smp_reason_codes:pairing_failed_reason_codes:0x08",
+        "smp_reason_codes:pairing_failed_reason_codes:0x07"
+      ],
+      "expected_keywords": [
+        "passkey",
+        "entry",
+        "user",
+        "mistyped"
+      ],
+      "matched_keyword": "passkey",
+      "explanation_ok": true
+    },
+    {
+      "name": "smp_authentication_requirements",
+      "expected": {
+        "layer": "SMP",
+        "kind": "Pairing Failed",
+        "code": "0x03"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x03 (Authentication Requirements) is that one device requires MITM protection (authenticated pairing), but the IO capabilities of the pair only support Just Works, or there's a mismatch between the Bonding flags set by the initiator and responder.\n\nNext debugging step: Inspect the Bonding flags set during pairing for both devices to ensure they match. Verify that the bonding flags are correctly set according to the device's requirements and the expected behavior for the chosen pairing mode (e.g., Just Works).",
+      "citations": [
+        "smp_reason_codes:pairing_failed_reason_codes:0x03",
+        "smp_reason_codes:pairing_failed_reason_codes:0x05",
+        "smp_reason_codes:pairing_failed_reason_codes:0x08",
+        "smp_reason_codes:pairing_failed_reason_codes:0x0A",
+        "smp_reason_codes:pairing_failed_reason_codes:0x07"
+      ],
+      "expected_keywords": [
+        "authentication",
+        "mitm",
+        "io capab",
+        "just works"
+      ],
+      "matched_keyword": "authentication",
+      "explanation_ok": true
+    },
+    {
+      "name": "smp_encryption_key_size",
+      "expected": {
+        "layer": "SMP",
+        "kind": "Pairing Failed",
+        "code": "0x06"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x06 (Encryption Key Size) is that a peer device requested an encryption key size below the local minimum security policy of one of the devices involved in the pairing process.\n\nNext debugging step: Inspect the Pairing Request/Response PDU exchanged between the two devices to verify if the requested key size was indeed within the allowed range. Specifically, check the 'Encryption Key Size' field in the Pairing Request or Response PDU to confirm it matches the local minimum security policy of one of the devices.",
+      "citations": [
+        "smp_reason_codes:pairing_failed_reason_codes:0x06",
+        "smp_reason_codes:pairing_failed_reason_codes:0x05",
+        "smp_reason_codes:pairing_failed_reason_codes:0x07",
+        "smp_reason_codes:pairing_failed_reason_codes:0x0A",
+        "smp_reason_codes:pairing_failed_reason_codes:0x08"
+      ],
+      "expected_keywords": [
+        "key size",
+        "weak",
+        "minimum",
+        "downgrade"
+      ],
+      "matched_keyword": "key size",
+      "explanation_ok": true
+    },
+    {
+      "name": "smp_dhkey_check_failed",
+      "expected": {
+        "layer": "SMP",
+        "kind": "Pairing Failed",
+        "code": "0x0B"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code 0x0B (DHKey Check Failed) is that the public key exchange during Secure Connections pairing was corrupted or tampered with, possibly due to a Man-in-the-Middle (MITM) attack.\n\nNext debugging step: Inspect the Pairing Request/Response PDU exchanged between the devices to verify its integrity and authenticity. Specifically, check for any signs of tampering or corruption in the public key exchange data, such as invalid or mismatched values, truncated or padded data, or unexpected padding schemes.",
+      "citations": [
+        "smp_reason_codes:pairing_failed_reason_codes:0x0B",
+        "smp_reason_codes:pairing_failed_reason_codes:0x05",
+        "smp_reason_codes:pairing_failed_reason_codes:0x0A",
+        "smp_reason_codes:pairing_failed_reason_codes:0x07",
+        "smp_reason_codes:pairing_failed_reason_codes:0x08"
+      ],
+      "expected_keywords": [
+        "dhkey",
+        "public key",
+        "tamper",
+        "corrupt"
+      ],
+      "matched_keyword": "dhkey",
+      "explanation_ok": true
+    },
+    {
+      "name": "smp_numeric_comparison_failed",
+      "expected": {
+        "layer": "SMP",
+        "kind": "Pairing Failed",
+        "code": "0x0C"
+      },
+      "detected_ok": true,
+      "explanation": "The likely root cause for Code name 'Numeric Comparison Failed' (Code 0x0C) is that the display values on both devices do not match or there's a UI bug causing incorrect pairing information to be displayed.\n\nNext debugging step: Inspect the pairing request/response PDUs transmitted between the two devices. Specifically, verify that the numeric comparison parameters are correctly formatted and sent by both devices.",
+      "citations": [
+        "smp_reason_codes:pairing_failed_reason_codes:0x0C",
+        "smp_reason_codes:pairing_failed_reason_codes:0x05",
+        "smp_reason_codes:pairing_failed_reason_codes:0x07",
+        "smp_reason_codes:pairing_failed_reason_codes:0x0A",
+        "smp_reason_codes:pairing_failed_reason_codes:0x08"
+      ],
+      "expected_keywords": [
+        "numeric comparison",
+        "user",
+        "reject",
+        "mismatch"
+      ],
+      "matched_keyword": "numeric comparison",
+      "explanation_ok": true
+    }
+  ]
+}
